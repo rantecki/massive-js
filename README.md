@@ -1,7 +1,7 @@
 # Massive.js: A Postgres-centric Data Access Tool
 
 [![node](https://img.shields.io/node/v/massive.svg)](https://npmjs.org/package/massive)
-[![Build Status](https://travis-ci.org/dmfay/massive-js.svg?branch=master)](https://travis-ci.org/dmfay/massive-js)
+[![Build Status](https://img.shields.io/gitlab/pipeline/dmfay/massive-js.svg)](https://gitlab.com/dmfay/massive-js/pipelines)
 [![Coverage Status](https://coveralls.io/repos/gitlab/dmfay/massive-js/badge.svg)](https://coveralls.io/gitlab/dmfay/massive-js)
 [![npm](https://img.shields.io/npm/dw/massive.svg)](https://npmjs.org/package/massive)
 
