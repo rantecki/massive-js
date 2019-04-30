@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [5.8.0](https://gitlab.com/dmfay/massive-js/compare/v5.7.7...v5.8.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v2.20.0 ([04ac4f4](https://gitlab.com/dmfay/massive-js/commit/04ac4f4))
+* **deps:** update dependency pg-promise to v8.6.4 ([70d6501](https://gitlab.com/dmfay/massive-js/commit/70d6501))
+* **deps:** update dependency pg-promise to v8.6.5 ([4cf6e15](https://gitlab.com/dmfay/massive-js/commit/4cf6e15))
+
+
+### Features
+
+* forUpdate and forShare option for find queries (closes [#677](https://gitlab.com/dmfay/massive-js/issues/677)) ([66a00ce](https://gitlab.com/dmfay/massive-js/commit/66a00ce))
+
+
+
 ## [5.7.7](https://gitlab.com/dmfay/massive-js/compare/v5.7.6...v5.7.7) (2019-03-01)
 
 
