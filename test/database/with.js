@@ -181,10 +181,6 @@ describe('transactions', function () {
         assert.isOk(record);
         assert.isTrue(record.id > 0);
         assert.equal(record.string, 'alpha');
-
-        return db.products.find(record.id).then(persisted => {
-          assert.isOk(persisted);
-        });
       });
     });
 
