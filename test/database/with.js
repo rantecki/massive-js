@@ -157,6 +157,37 @@ describe('transactions', function () {
       });
     });
 
+    it('selects for update with sorting and limiting', function () {
+      return db.withTransaction(tx => {
+        let promise = tx.products.insert({string: 'alpha'});
+
+        promise = promise.then(record => {
+          assert.isOk(record);
+          assert.isTrue(record.id > 0);
+          assert.equal(record.string, 'alpha');
+
+          return tx.products.findOne({id: record.id}, {
+            order: [{field: 'string', direction: 'desc'}],
+            forUpdate: true
+          });
+        });
+
+        return promise;
+      }, {
+        mode: new db.pgp.txMode.TransactionMode({
+          tiLevel: db.pgp.txMode.isolationLevel.serializable
+        })
+      }).then(record => {
+        assert.isOk(record);
+        assert.isTrue(record.id > 0);
+        assert.equal(record.string, 'alpha');
+
+        return db.products.find(record.id).then(persisted => {
+          assert.isOk(persisted);
+        });
+      });
+    });
+
     it('reloads and applies DDL', function () {
       return db.withTransaction(co.wrap(function* (tx) {
         yield tx.query('create table test1 (id serial not null primary key, val text not null)');

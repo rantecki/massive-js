@@ -39,78 +39,99 @@ describe('Select', function () {
       assert.equal(result.format(), 'SELECT * FROM ONLY testsource WHERE TRUE ORDER BY 1');
     });
 
-    it('should interpolate fields', function () {
-      const result = new Select(source, {}, {fields: ['col1']});
-      assert.equal(result.format(), 'SELECT "col1" FROM testsource WHERE TRUE ORDER BY 1');
-    });
-
-    it('should join arrays', function () {
-      const result = new Select(source, {}, {fields: ['col1', 'col2']});
-      assert.equal(result.format(), 'SELECT "col1","col2" FROM testsource WHERE TRUE ORDER BY 1');
-    });
-
-    it('should parse JSON fields', function () {
-      const result = new Select(source, {}, {
-        fields: [
-          'field.element',
-          'field.array[0]',
-          'field.array[1].nested[2].element'
-        ]
+    describe('fields', function () {
+      it('should interpolate fields', function () {
+        const result = new Select(source, {}, {fields: ['col1']});
+        assert.equal(result.format(), 'SELECT "col1" FROM testsource WHERE TRUE ORDER BY 1');
       });
 
-      assert.equal(result.format(), `SELECT "field"->>'element',"field"#>>'{array,0}',"field"#>>'{array,1,nested,2,element}' FROM testsource WHERE TRUE ORDER BY 1`);
-    });
-
-    it('should alias fields in document mode', function () {
-      const result = new Select(source, {}, {
-        fields: ['one', 'two'],
-        document: true
+      it('should join arrays', function () {
+        const result = new Select(source, {}, {fields: ['col1', 'col2']});
+        assert.equal(result.format(), 'SELECT "col1","col2" FROM testsource WHERE TRUE ORDER BY 1');
       });
 
-      assert.equal(result.format(), `SELECT "body"->>'one' AS "one","body"->>'two' AS "two",id FROM testsource WHERE TRUE ORDER BY 1`);
-    });
+      it('should parse JSON fields', function () {
+        const result = new Select(source, {}, {
+          fields: [
+            'field.element',
+            'field.array[0]',
+            'field.array[1].nested[2].element'
+          ]
+        });
 
-    it('should add expressions', function () {
-      const result = new Select(source, {}, {
-        exprs: {
-          colsum: 'col1 + col2',
-          coldiff: 'col1 - col2'
-        }
+        assert.equal(result.format(), `SELECT "field"->>'element',"field"#>>'{array,0}',"field"#>>'{array,1,nested,2,element}' FROM testsource WHERE TRUE ORDER BY 1`);
       });
 
-      assert.equal(result.format(), 'SELECT col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM testsource WHERE TRUE ORDER BY 1');
-    });
+      it('should alias fields in document mode', function () {
+        const result = new Select(source, {}, {
+          fields: ['one', 'two'],
+          document: true
+        });
 
-    it('should add fields and expressions', function () {
-      const result = new Select(source, {}, {
-        fields: ['col1', 'col2'],
-        exprs: {
-          colsum: 'col1 + col2',
-          coldiff: 'col1 - col2'
-        }
+        assert.equal(result.format(), `SELECT "body"->>'one' AS "one","body"->>'two' AS "two",id FROM testsource WHERE TRUE ORDER BY 1`);
       });
 
-      assert.equal(result.format(), 'SELECT "col1","col2",col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM testsource WHERE TRUE ORDER BY 1');
+      it('should add expressions', function () {
+        const result = new Select(source, {}, {
+          exprs: {
+            colsum: 'col1 + col2',
+            coldiff: 'col1 - col2'
+          }
+        });
+
+        assert.equal(result.format(), 'SELECT col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM testsource WHERE TRUE ORDER BY 1');
+      });
+
+      it('should add fields and expressions', function () {
+        const result = new Select(source, {}, {
+          fields: ['col1', 'col2'],
+          exprs: {
+            colsum: 'col1 + col2',
+            coldiff: 'col1 - col2'
+          }
+        });
+
+        assert.equal(result.format(), 'SELECT "col1","col2",col1 + col2 AS "colsum",col1 - col2 AS "coldiff" FROM testsource WHERE TRUE ORDER BY 1');
+      });
     });
 
-    it('should add an offset', function () {
-      const result = new Select(source, {}, {offset: 10});
-      assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 OFFSET 10');
+    describe('for update/for share', function () {
+      it('adds FOR UPDATE', function () {
+        const result = new Select(source, {}, {forUpdate: true});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 FOR UPDATE');
+      });
+
+      it('adds FOR SHARE', function () {
+        const result = new Select(source, {}, {forShare: true});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 FOR SHARE');
+      });
+
+      it('applies limits with a FOR', function () {
+        const result = new Select(source, {}, {forUpdate: true, limit: 1});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 FOR UPDATE LIMIT 1');
+      });
     });
 
-    it('should limit single queries to one result', function () {
-      const result = new Select(source, {}, {single: true});
-      assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 LIMIT 1');
-    });
+    describe('offset and limit', function () {
+      it('should add an offset', function () {
+        const result = new Select(source, {}, {offset: 10});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 OFFSET 10');
+      });
 
-    it('should add a limit', function () {
-      const result = new Select(source, {}, {limit: 10});
-      assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 LIMIT 10');
-    });
+      it('should limit single queries to one result', function () {
+        const result = new Select(source, {}, {single: true});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 LIMIT 1');
+      });
 
-    it('should add both offset and limit', function () {
-      const result = new Select(source, {}, {offset: 10, limit: 10});
-      assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 OFFSET 10 LIMIT 10');
+      it('should add a limit', function () {
+        const result = new Select(source, {}, {limit: 10});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 LIMIT 10');
+      });
+
+      it('should add both offset and limit', function () {
+        const result = new Select(source, {}, {offset: 10, limit: 10});
+        assert.equal(result.format(), 'SELECT * FROM testsource WHERE TRUE ORDER BY 1 OFFSET 10 LIMIT 10');
+      });
     });
 
     describe('keyset pagination', function () {
