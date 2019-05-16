@@ -60,6 +60,27 @@ CREATE OR REPLACE FUNCTION multi_variadic(arg1 int, variadic args int[]) RETURNS
 SELECT arg1 + array_length(args, 1);
 $$ LANGUAGE SQL;
 
+CREATE TABLE proc_results (
+  name TEXT,
+  val INT
+);
+
+CREATE OR REPLACE PROCEDURE proc_no_params() AS $$
+INSERT INTO proc_results(name) VALUES ('no_params');
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE PROCEDURE proc_with_params(one INT, two INT) AS $$
+INSERT INTO proc_results(name, val) VALUES ('with_params', one + two);
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE PROCEDURE proc_with_variadic_params(VARIADIC args INT[]) AS $$
+INSERT INTO proc_results(name, val) VALUES ('with_variadic_params', array_length(args, 1));
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE PROCEDURE proc_with_params_and_variadic_params(one INT, VARIADIC args INT[]) AS $$
+INSERT INTO proc_results(name, val) VALUES ('with_params_and_variadic_params', one + array_length(args, 1));
+$$ LANGUAGE SQL;
+
 CREATE SCHEMA one;
 
 CREATE OR REPLACE FUNCTION one.get_number() RETURNS int AS $$

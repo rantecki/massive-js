@@ -12,7 +12,6 @@ SELECT * FROM (
     (NOT p.proretset) AS "singleRow",
     (t.typtype IN ('b', 'd', 'e', 'r')) AS "singleValue",
     p.proname AS name,
-    p.prokind AS kind,
     p.pronargs AS "paramCount",
     p.provariadic AS "isVariadic"
   FROM pg_proc p

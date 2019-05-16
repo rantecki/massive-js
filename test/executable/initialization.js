@@ -13,11 +13,15 @@ describe('initialization', function () {
 
   it('wires an invocation function', function () {
     assert.isFunction(db.get_number);
+    assert.isFunction(db.proc_no_params);
   });
 
-  it('recognizes variadic functions', function () {
+  it('recognizes variadic functions and procs', function () {
     const fn = db.objects.find(f => f.name === 'single_variadic');
     assert.isTrue(fn.isVariadic);
+
+    const proc = db.objects.find(p => p.name === 'proc_with_variadic_params');
+    assert.isTrue(proc.isVariadic);
   });
 
   it('handles casing and schema', function* () {
