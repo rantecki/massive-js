@@ -50,7 +50,7 @@ describe('detaching entities', function () {
       name: 'table_or_script',
       path: 'table_or_script',
       sql: 'select 1 as val',
-      paramCount: 0,
+      arity: 0,
       db
     }));
 
@@ -72,7 +72,7 @@ describe('detaching entities', function () {
       name: 'myscript',
       path: 'outer.inner.myscript',
       sql: 'select 1 as val',
-      paramCount: 0,
+      arity: 0,
       db
     }));
 

@@ -30,7 +30,7 @@ describe('attaching entities', function () {
         name: 'script1',
         path: 'newschema.script1',
         sql: 'select 2 as val',
-        paramCount: 0,
+        arity: 0,
         db
       }));
 
@@ -257,7 +257,7 @@ describe('attaching entities', function () {
           name: 'function_or_script',
           path: 'function_or_script',
           sql: 'select 2 as val',
-          paramCount: 0,
+          arity: 0,
           db
         }));
       });
@@ -276,7 +276,7 @@ describe('attaching entities', function () {
           name: 'function_or_script',
           path: 'function_or_script',
           sql: 'select 2 as val',
-          paramCount: 0,
+          arity: 0,
           isVariadic: false,
           db
         }));
