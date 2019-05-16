@@ -32,6 +32,36 @@ describe('views', function () {
     ]);
   });
 
+  describe('server < 9.3', function () {
+    let realServerVersion;
+
+    before(function () {
+      realServerVersion = db.serverVersion;
+
+      db.serverVersion = '9.2';
+    });
+
+    after(function () {
+      db.serverVersion = realServerVersion;
+    });
+
+    it('should exclude materialized views if the server is too old', function* () {
+      db.loader = _.defaults({
+        allowedSchemas: '',
+        blacklist: '',
+        exceptions: ''
+      }, db.loader);
+
+      const views = yield loader(db);
+
+      assert.isArray(views);
+      assert.lengthOf(views, 1);
+      assert.isTrue(views[0].hasOwnProperty('schema'));
+      assert.isTrue(views[0].hasOwnProperty('name'));
+      assert.equal(views[0].name, 'vals_starting_with_t');
+    });
+  });
+
   it('should exclude materialized views', function* () {
     db.loader = _.defaults({
       allowedSchemas: '',
