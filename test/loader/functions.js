@@ -20,7 +20,7 @@ describe('functions', function () {
     assert.isTrue(functions.length > 0);
     assert.isTrue(functions[0].hasOwnProperty('name'));
     assert.isTrue(functions[0].hasOwnProperty('schema'));
-    assert.isTrue(functions[0].hasOwnProperty('sql'));
+    assert.isFalse(functions[0].hasOwnProperty('sql'));
     assert.isTrue(functions.some(f => f.kind === 'p'));
   });
 
@@ -44,7 +44,7 @@ describe('functions', function () {
       assert.isTrue(functions.length > 0);
       assert.isTrue(functions[0].hasOwnProperty('name'));
       assert.isTrue(functions[0].hasOwnProperty('schema'));
-      assert.isTrue(functions[0].hasOwnProperty('sql'));
+      assert.isFalse(functions[0].hasOwnProperty('sql'));
       assert.isTrue(functions.some(f => f.kind === undefined));
     });
   });
