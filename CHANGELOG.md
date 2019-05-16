@@ -1,6 +1,29 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.9.0](https://gitlab.com/dmfay/massive-js/compare/v5.8.0...v5.9.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* always generate function invocation sql to handle overloads properly ([0b60dcd](https://gitlab.com/dmfay/massive-js/commit/0b60dcd))
+* **deps:** update dependency glob to v7.1.4 ([587fcd1](https://gitlab.com/dmfay/massive-js/commit/587fcd1))
+* **deps:** update dependency pg-promise to v8.7.0 ([800c093](https://gitlab.com/dmfay/massive-js/commit/800c093))
+* **deps:** update dependency pg-promise to v8.7.1 ([5d418f1](https://gitlab.com/dmfay/massive-js/commit/5d418f1))
+* **deps:** update dependency pg-promise to v8.7.2 ([3374298](https://gitlab.com/dmfay/massive-js/commit/3374298))
+
+
+### Features
+
+* invoke procedures like functions (fixes [#679](https://gitlab.com/dmfay/massive-js/issues/679)) ([aa18183](https://gitlab.com/dmfay/massive-js/commit/aa18183))
+
+
+### Tests
+
+* remove superfluous check ([d387aec](https://gitlab.com/dmfay/massive-js/commit/d387aec))
+
+
 
 # [5.8.0](https://gitlab.com/dmfay/massive-js/compare/v5.7.7...v5.8.0) (2019-04-30)
 
