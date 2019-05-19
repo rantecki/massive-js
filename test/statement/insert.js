@@ -87,80 +87,80 @@ describe('Insert', function () {
       assert.deepEqual(result.params, ['value1', undefined, undefined, 'value2']);
     });
 
-    it('should handle onConflictIgnore option', function () {
-      const result = new Insert(source, {field1: 'value1'}, {onConflictIgnore: true});
-      assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT DO NOTHING RETURNING *');
-      assert.deepEqual(result.params, ['value1']);
-    });
-
     it('should restrict returned fields', function () {
       const result = new Insert(source, {field1: 'value1'}, {fields: ['field1', 'field2']});
       assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING "field1", "field2"');
       assert.deepEqual(result.params, ['value1']);
     });
 
-    it('should create junction queries', function () {
-      const result = new Insert(
-        source,
-        {
-          field1: 'value1',
-          junction_one: [{
-            j1fk: 10,
-            source_id: undefined,
-            j1field: 'something'
-          }],
-          junction_many: [{
-            source_id_another_name: undefined,
-            j2fk: 101,
-            j2field: 'j2f1'
-          }, {
-            source_id_another_name: undefined,
-            j2fk: 102,
-            j2field: null
-          }],
-          'junction.in_schema': [{
-            source_id: undefined,
-            jsfk: 111,
-            jsfield: 'abc'
-          }]
-        }, {
-          deepInsert: true
-        }
-      );
-
-      assert.equal(result.format(), 'WITH inserted AS (INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *), q_0_0 AS (INSERT INTO "junction_one" ("source_id", "j1fk", "j1field") SELECT "id", $2, $3 FROM inserted), q_1_0 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $4, $5 FROM inserted), q_1_1 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $6, $7 FROM inserted), q_2_0 AS (INSERT INTO "junction"."in_schema" ("source_id", "jsfk", "jsfield") SELECT "id", $8, $9 FROM inserted) SELECT * FROM inserted');
-      assert.deepEqual(result.params, ['value1', 10, 'something', 101, 'j2f1', 102, null, 111, 'abc']);
-    });
-
-    it('should not create junction queries when options specified', function () {
-      const result = new Insert(
-        source,
-        {
-          field1: 'value1',
-          junction_one: [{
-            j1fk: 10,
-            source_id: undefined,
-            j1field: 'something'
-          }],
-          junction_many: [{
-            source_id_another_name: undefined,
-            j2fk: 101,
-            j2field: 'j2f1'
-          }, {
-            source_id_another_name: undefined,
-            j2fk: 102,
-            j2field: null
-          }]
-        },
-        {deepInsert: false}
-      );
-
-      assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *');
+    it('should handle onConflictIgnore option', function () {
+      const result = new Insert(source, {field1: 'value1'}, {onConflictIgnore: true});
+      assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) ON CONFLICT DO NOTHING RETURNING *');
       assert.deepEqual(result.params, ['value1']);
     });
 
-    it('should throw when trying to create junction queries for multiple records', function () {
-      try {
+    describe('deep insert', function () {
+      it('should create junction queries', function () {
+        const result = new Insert(
+          source,
+          {
+            field1: 'value1',
+            junction_one: [{
+              j1fk: 10,
+              source_id: undefined,
+              j1field: 'something'
+            }],
+            junction_many: [{
+              source_id_another_name: undefined,
+              j2fk: 101,
+              j2field: 'j2f1'
+            }, {
+              source_id_another_name: undefined,
+              j2fk: 102,
+              j2field: null
+            }],
+            'junction.in_schema': [{
+              source_id: undefined,
+              jsfk: 111,
+              jsfield: 'abc'
+            }]
+          }, {
+            deepInsert: true
+          }
+        );
+
+        assert.equal(result.format(), 'WITH inserted AS (INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *), q_0_0 AS (INSERT INTO "junction_one" ("source_id", "j1fk", "j1field") SELECT "id", $2, $3 FROM inserted), q_1_0 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $4, $5 FROM inserted), q_1_1 AS (INSERT INTO "junction_many" ("source_id_another_name", "j2fk", "j2field") SELECT "id", $6, $7 FROM inserted), q_2_0 AS (INSERT INTO "junction"."in_schema" ("source_id", "jsfk", "jsfield") SELECT "id", $8, $9 FROM inserted) SELECT * FROM inserted');
+        assert.deepEqual(result.params, ['value1', 10, 'something', 101, 'j2f1', 102, null, 111, 'abc']);
+      });
+
+      it('should not create junction queries when deepInsert is explicitly disabled', function () {
+        const result = new Insert(
+          source,
+          {
+            field1: 'value1',
+            junction_one: [{
+              j1fk: 10,
+              source_id: undefined,
+              j1field: 'something'
+            }],
+            junction_many: [{
+              source_id_another_name: undefined,
+              j2fk: 101,
+              j2field: 'j2f1'
+            }, {
+              source_id_another_name: undefined,
+              j2fk: 102,
+              j2field: null
+            }]
+          },
+          {deepInsert: false}
+        );
+
+        assert.equal(result.format(), 'INSERT INTO "testsource" ("field1") VALUES ($1) RETURNING *');
+        assert.deepEqual(result.params, ['value1']);
+      });
+
+      it('should throw when trying to create junction queries for multiple records', function () {
         const x = new Insert(
           source,
           [{
@@ -189,26 +189,26 @@ describe('Insert', function () {
               j2fk: 202,
               j2field: 'j2f4'
             }]
-          }]
+          }], {
+            deepInsert: true
+          }
         );
 
-        assert.fail();
-        assert.isNull(x);
-      } catch (err) {
-        assert.isOk(err);
-      }
-    });
+        assert.throws(x.format.bind(x), 'Found potential deep insert definitions in the record array. Deep insert is only supported for single records. If you are not attempting a deep insert, ensure that your records do not contain non-column keys or use the {deepInsert: false} option.');
+      });
 
-    it('should throw when formatting a deep insert with bad definitions', function () {
-      const x = new Insert(
-        source,
-        {
-          field1: 'value1',
-          not_a_junction: 'q'
-        }
-      );
+      it('should throw when formatting a deep insert with bad definitions', function () {
+        const x = new Insert(
+          source, {
+            field1: 'value1',
+            not_a_junction: 'q'
+          }, {
+            deepInsert: true
+          }
+        );
 
-      assert.throws(x.format);
+        assert.throws(x.format.bind(x), 'Attempted a deep insert with a bad junction definition. If you did not intend a deep insert, ensure that your record only contains values for database columns or disable this functionality with the {deepInsert: false} option.');
+      });
     });
   });
 });
