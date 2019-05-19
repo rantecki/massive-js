@@ -84,6 +84,14 @@ describe('saveDoc', function () {
       assert.isOk(row);
       assert.deepEqual(row.body, {one: 1, two: 2});
     });
+
+    it('should return a rejected promise for passing in a non-object', function* () {
+      try {
+        yield db.saveDoc('doctable', [{foo: 'bar'}]);
+      } catch (e) {
+        assert.equal(e.message, 'Please pass in the document for saving as an object. Include the primary key for an UPDATE.');
+      }
+    });
   });
 
   describe('with an existing table in a schema', function () {

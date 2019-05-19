@@ -16,11 +16,19 @@ describe('saveDocs', function () {
       return db.createDocumentTable('doctable');
     });
 
-    it('should return a rejected promise for passing in a non array object', function* () {
+    it('should return a rejected promise for passing a non-array', function* () {
       try {
         yield db.saveDocs('doctable', {foo: 'bar'});
       } catch (e) {
-        assert.equal(e, 'Please pass in the documents as an array of objects.');
+        assert.equal(e.message, 'Please pass in the documents as an array of objects.');
+      }
+    });
+
+    it('should return a rejected promise for passing an array with a non-object', function* () {
+      try {
+        yield db.saveDocs('doctable', [{foo: 'bar'}, 123]);
+      } catch (e) {
+        assert.equal(e.message, 'Please pass in valid documents. Include the primary key for an UPDATE.');
       }
     });
 
