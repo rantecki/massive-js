@@ -168,6 +168,26 @@ describe('insert', function () {
     });
   });
 
+  it('upserts', function* () {
+    const original = yield db.normal_pk.insert({field1: 'zeta'});
+    const beforeCount = yield db.normal_pk.count();
+    const conflict = yield db.normal_pk.insert({
+      id: original.id,
+      field1: 'eta'
+    }, {
+      onConflictUpdate: ['id']
+    });
+
+    const afterCount = yield db.normal_pk.count();
+
+    assert.equal(beforeCount, afterCount);
+    assert.equal(conflict.id, original.id);
+
+    const final = yield db.normal_pk.findOne(original.id);
+
+    assert.equal(final.field1, 'eta');
+  });
+
   it('rejects if not insertable', function* () {
     let caught = false;
 
