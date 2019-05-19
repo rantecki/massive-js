@@ -88,4 +88,17 @@ describe('search', function () {
       assert.equal(res[1].id, 4);
     });
   });
+
+  it('requires fields and term', function () {
+    let caught = false;
+
+    return db.products.search({})
+      .then(() => assert.fail())
+      .catch(err => {
+        assert.equal(err.message, 'Need fields as an array and a term string');
+
+        caught = true;
+      })
+      .then(() => assert.isTrue(caught));
+  });
 });
