@@ -1,61 +1,20 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [5.9.0](https://gitlab.com/dmfay/massive-js/compare/v5.8.0...v5.9.0) (2019-05-16)
+<a name="5.10.0"></a>
+# [5.10.0](https://gitlab.com/dmfay/massive-js/compare/v5.9.0...v5.10.0) (2019-05-19)
 
 
 ### Bug Fixes
 
-* always generate function invocation sql to handle overloads properly ([0b60dcd](https://gitlab.com/dmfay/massive-js/commit/0b60dcd))
-* **deps:** update dependency glob to v7.1.4 ([587fcd1](https://gitlab.com/dmfay/massive-js/commit/587fcd1))
-* **deps:** update dependency pg-promise to v8.7.0 ([800c093](https://gitlab.com/dmfay/massive-js/commit/800c093))
-* **deps:** update dependency pg-promise to v8.7.1 ([5d418f1](https://gitlab.com/dmfay/massive-js/commit/5d418f1))
-* **deps:** update dependency pg-promise to v8.7.2 ([3374298](https://gitlab.com/dmfay/massive-js/commit/3374298))
+* return real error for incomplete args to Readable.search and searchDoc ([c251495](https://gitlab.com/dmfay/massive-js/commit/c251495))
+* return real error in saveDoc/saveDocs ([6fa2d88](https://gitlab.com/dmfay/massive-js/commit/6fa2d88))
 
 
 ### Features
 
-* invoke procedures like functions (fixes [#679](https://gitlab.com/dmfay/massive-js/issues/679)) ([aa18183](https://gitlab.com/dmfay/massive-js/commit/aa18183))
-
-
-### Tests
-
-* remove superfluous check ([d387aec](https://gitlab.com/dmfay/massive-js/commit/d387aec))
-
-
-
-# [5.8.0](https://gitlab.com/dmfay/massive-js/compare/v5.7.7...v5.8.0) (2019-04-30)
-
-
-### Bug Fixes
-
-* **deps:** update dependency commander to v2.20.0 ([04ac4f4](https://gitlab.com/dmfay/massive-js/commit/04ac4f4))
-* **deps:** update dependency pg-promise to v8.6.4 ([70d6501](https://gitlab.com/dmfay/massive-js/commit/70d6501))
-* **deps:** update dependency pg-promise to v8.6.5 ([4cf6e15](https://gitlab.com/dmfay/massive-js/commit/4cf6e15))
-
-
-### Features
-
-* forUpdate and forShare option for find queries (closes [#677](https://gitlab.com/dmfay/massive-js/issues/677)) ([66a00ce](https://gitlab.com/dmfay/massive-js/commit/66a00ce))
-
-
-
-## [5.7.7](https://gitlab.com/dmfay/massive-js/compare/v5.7.6...v5.7.7) (2019-03-01)
-
-
-### Bug Fixes
-
-* query files can use streaming as long as they don't have named parameters ([58e413c](https://gitlab.com/dmfay/massive-js/commit/58e413c))
-
-
-
-## [5.7.6](https://github.com/dmfay/massive-js/compare/v5.7.5...v5.7.6) (2019-02-18)
-
-
-### Bug Fixes
-
-* simplify executable clone to improve performance in tasks/transactions (fixes [#673](https://github.com/dmfay/massive-js/issues/673)) ([#674](https://github.com/dmfay/massive-js/issues/674)) ([bf1c5df](https://github.com/dmfay/massive-js/commit/bf1c5df))
+* onConflictUpdate option for true upserts in db.mytable.insert ([a4cf534](https://gitlab.com/dmfay/massive-js/commit/a4cf534))
 
 
 
