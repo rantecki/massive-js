@@ -1,6 +1,20 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.11.0](https://gitlab.com/dmfay/massive-js/compare/v5.10.0...v5.11.0) (2019-06-03)
+
+
+### Bug Fixes
+
+* use full name for materialized view refresh() ([985a30a](https://gitlab.com/dmfay/massive-js/commit/985a30a))
+
+
+### Features
+
+* onConflictUpdateExclude option to prevent upserts overwriting specified fields ([4c9d9ce](https://gitlab.com/dmfay/massive-js/commit/4c9d9ce))
+
+
 
 <a name="5.10.0"></a>
 # [5.10.0](https://gitlab.com/dmfay/massive-js/compare/v5.9.0...v5.10.0) (2019-05-19)
