@@ -117,6 +117,20 @@ describe('Insert', function () {
         assert.equal(result.format(), 'INSERT INTO "testsource" ("field1", "object") VALUES ($1, $2) ON CONFLICT ("id", "field2") DO UPDATE SET "field1" = EXCLUDED."field1", "object" = EXCLUDED."object" RETURNING *');
         assert.deepEqual(result.params, ['value1', 'value2']);
       });
+
+      it('should handle onConflictUpdate option with multiple fields and conflict keys and additional excluded fields', function () {
+        const result = new Insert(source, {
+          field1: 'value1',
+          object: 'value2',
+          created_by: 'value3'
+        }, {
+          onConflictUpdate: ['id', 'field2'],
+          onConflictUpdateExclude: ['created_by']
+        });
+
+        assert.equal(result.format(), 'INSERT INTO "testsource" ("field1", "object") VALUES ($1, $2) ON CONFLICT ("id", "field2") DO UPDATE SET "field1" = EXCLUDED."field1", "object" = EXCLUDED."object" RETURNING *');
+        assert.deepEqual(result.params, ['value1', 'value2']);
+      });
     });
 
     describe('deep insert', function () {
