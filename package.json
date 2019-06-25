@@ -1,9 +1,9 @@
 {
   "name": "massive",
-  "version": "4.5.0",
+  "version": "5.11.0",
   "description": "A small query tool for Postgres that embraces json and makes life simpler",
-  "homepage": "https://dmfay.github.io/massive-js/",
-  "bugs": "https://github.com/dmfay/massive-js/issues",
+  "homepage": "https://massivejs.org",
+  "bugs": "https://gitlab.com/dmfay/massive-js/issues",
   "main": "index.js",
   "bin": {
     "massive": "bin/massive.js"
@@ -26,11 +26,8 @@
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha",
     "lint": "eslint '.'",
-    "docs": "rm -rf ./docs/api && jsdoc -d ./docs/api -c ./.jsdoc.json -r",
-    "docserver": "npm run docs && cd docs && bundle exec jekyll serve",
     "posttest": "npm run lint",
-    "preversion": "sh build/apidocs.sh",
-    "postversion": "sh build/update-gh-pages.sh",
+    "release": "standard-version",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "keywords": [
@@ -52,24 +49,24 @@
   ],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "commander": "~2.11.0",
-    "glob": "~7.1.1",
-    "lodash": "~4.17.4",
-    "pg-promise": "~6.7.1",
-    "pg-query-stream": "~1.0.0"
+    "commander": "2.20.0",
+    "glob": "7.1.4",
+    "lodash": "4.17.11",
+    "pg-promise": "8.7.2",
+    "pg-query-stream": "2.0.0"
   },
   "devDependencies": {
-    "chai": "~4.1.0",
-    "chai-as-promised": "~7.1.1",
-    "co-mocha": "~1.2.0",
-    "coveralls": "~3.0.0",
-    "eslint": "~4.11.0",
-    "jsdoc": "^3.5.4",
-    "mocha": "~4.0.0",
-    "nyc": "~11.3.0"
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "co-mocha": "1.2.2",
+    "coveralls": "3.0.4",
+    "eslint": "5.16.0",
+    "mocha": "6.1.4",
+    "nyc": "14.1.1",
+    "standard-version": "6.0.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dmfay/massive-js.git"
+    "url": "https://gitlab.com/dmfay/massive-js"
   }
 }

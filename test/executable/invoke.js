@@ -11,7 +11,7 @@ describe('invoke', function () {
     return db.instance.$pool.end();
   });
 
-  describe('arguments', function () {
+  describe('function arguments', function () {
     it('invokes a function with no arguments', function () {
       return db.get_number().then(res => {
         assert.equal(res, 1);
@@ -48,21 +48,55 @@ describe('invoke', function () {
       });
     });
 
-    it('invokes a script function with no parameters', function () {
+    it('invokes a script with no parameters', function () {
       return db.noParam().then(res => {
         assert.deepEqual(res, [{'?column?': 1}]);
       });
     });
 
-    it('invokes a script function with no parameters in an empty array', function () {
+    it('invokes a script with no parameters in an empty array', function () {
       return db.noParam([]).then(res => {
         assert.deepEqual(res, [{'?column?': 1}]);
       });
     });
 
-    it('invokes a script function with named parameters', function () {
+    it('invokes a script with prepared statement parameters', function () {
+      return db.psParams(1, 2).then(res => {
+        assert.equal(res[0][Object.keys(res[0])[0]], 3);
+      });
+    });
+
+    it('invokes a script with prepared statement parameters in an array', function () {
+      return db.psParams([1, 2]).then(res => {
+        assert.equal(res[0][Object.keys(res[0])[0]], 3);
+      });
+    });
+
+    it('invokes a script with something that looks like a parameter', function () {
+      return db.falseParam().then(res => {
+        assert.equal(res[0][Object.keys(res[0])[0]], '$123');
+      });
+    });
+
+    it('fails to invoke a script with too few prepared statement parameters', function () {
+      return db.psParams(1).then(() => {
+        assert.fail();
+      }).catch(e => {
+        assert.isOk(e);
+      });
+    });
+
+    it('invokes a script with named parameters', function () {
       return db.namedParam({value: 2}).then(res => {
         assert.equal(res[0][Object.keys(res[0])[0]], 3);
+      });
+    });
+
+    it('fails to invoke a script with too few named parameters', function () {
+      return db.namedParam({}).then(() => {
+        assert.fail();
+      }).catch(e => {
+        assert.isOk(e);
       });
     });
 
@@ -76,6 +110,52 @@ describe('invoke', function () {
       return db.multi_variadic(10, 2, 1, 2).then(res => {
         assert.equal(res, 13);
       });
+    });
+  });
+
+  describe('proc arguments', function () {
+    beforeEach(function () {
+      return db.proc_results.destroy({});
+    });
+
+    it('invokes a proc with no arguments', function* () {
+      yield db.proc_no_params();
+
+      const output = yield db.proc_results.find();
+
+      assert.lengthOf(output, 1);
+      assert.equal(output[0].name, 'no_params');
+      assert.isNull(output[0].val);
+    });
+
+    it('invokes a proc with multiple arguments directly', function* () {
+      yield db.proc_with_params(1, 2);
+
+      const output = yield db.proc_results.find();
+
+      assert.lengthOf(output, 1);
+      assert.equal(output[0].name, 'with_params');
+      assert.equal(output[0].val, 3);
+    });
+
+    it('invokes a simple variadic proc', function* () {
+      yield db.proc_with_variadic_params(1, 2, 1, 2);
+
+      const output = yield db.proc_results.find();
+
+      assert.lengthOf(output, 1);
+      assert.equal(output[0].name, 'with_variadic_params');
+      assert.equal(output[0].val, 4);
+    });
+
+    it('invokes a variadic proc with earlier arguments', function* () {
+      yield db.proc_with_params_and_variadic_params(10, 2, 1, 2);
+
+      const output = yield db.proc_results.find();
+
+      assert.lengthOf(output, 1);
+      assert.equal(output[0].name, 'with_params_and_variadic_params');
+      assert.equal(output[0].val, 13);
     });
   });
 
@@ -202,10 +282,12 @@ describe('invoke', function () {
         const result = [];
 
         stream.on('readable', function () {
-          const res = stream.read();
+          let res;
 
-          if (res) {
-            result.push(res);
+          while (res = stream.read()) { // eslint-disable-line no-cond-assign
+            if (res) {
+              result.push(res);
+            }
           }
         });
 
@@ -221,15 +303,69 @@ describe('invoke', function () {
       });
     });
 
+    it('streams a query file with no parameters', function (done) {
+      db.noParam({stream: true}).then(stream => {
+        const result = [];
+
+        stream.on('readable', function () {
+          let res;
+
+          while (res = stream.read()) { // eslint-disable-line no-cond-assign
+            if (res) {
+              result.push(res);
+            }
+          }
+        });
+
+        stream.on('end', function () {
+          assert.deepEqual(result, [{'?column?': 1}]);
+
+          done();
+        });
+      });
+    });
+
+    it('streams a query file with indexed parameters', function (done) {
+      db.psParams([1, 2], {stream: true}).then(stream => {
+        const result = [];
+
+        stream.on('readable', function () {
+          let res;
+
+          while (res = stream.read()) { // eslint-disable-line no-cond-assign
+            if (res) {
+              result.push(res);
+            }
+          }
+        });
+
+        stream.on('end', function () {
+          assert.deepEqual(result, [{'?column?': 3}]);
+
+          done();
+        });
+      });
+    });
+
+    it('cannot stream a query file with named parameters', function () {
+      return db.namedParam({value: 1}, {stream: true}).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert.equal(err.message, 'Named parameters are not supported when streaming QueryFiles');
+      });
+    });
+
     it('pipes a single-valued function through SingleValueStream', function (done) {
       db.regexp_matches('aaaaaaaaaaaaaaaaaaaa', 'a', 'g', {stream: true}).then(stream => {
         const result = [];
 
         stream.on('readable', function () {
-          const res = stream.read();
+          let res;
 
-          if (res) {
-            result.push(res);
+          while (res = stream.read()) { // eslint-disable-line no-cond-assign
+            if (res) {
+              result.push(res);
+            }
           }
         });
 

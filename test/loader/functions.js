@@ -13,13 +13,39 @@ describe('functions', function () {
     return db.instance.$pool.end();
   });
 
-  it('should query for a list of functions', function* () {
-    const functions = yield loader(db, db.loader);
+  it('should query for a list of functions and procedures', function* () {
+    const functions = yield loader(db);
 
     assert.isArray(functions);
-    assert.lengthOf(functions, 46);
+    assert.isTrue(functions.length > 0);
     assert.isTrue(functions[0].hasOwnProperty('name'));
     assert.isTrue(functions[0].hasOwnProperty('schema'));
-    assert.isTrue(functions[0].hasOwnProperty('sql'));
+    assert.isFalse(functions[0].hasOwnProperty('sql'));
+    assert.isTrue(functions.some(f => f.kind === 'p'));
+  });
+
+  describe('server < 11', function () {
+    let realServerVersion;
+
+    before(function () {
+      realServerVersion = db.serverVersion;
+
+      db.serverVersion = '10.2';
+    });
+
+    after(function () {
+      db.serverVersion = realServerVersion;
+    });
+
+    it('should not recognize procs if the server is too old', function* () {
+      const functions = yield loader(db);
+
+      assert.isArray(functions);
+      assert.isTrue(functions.length > 0);
+      assert.isTrue(functions[0].hasOwnProperty('name'));
+      assert.isTrue(functions[0].hasOwnProperty('schema'));
+      assert.isFalse(functions[0].hasOwnProperty('sql'));
+      assert.isTrue(functions.some(f => f.kind === undefined));
+    });
   });
 });

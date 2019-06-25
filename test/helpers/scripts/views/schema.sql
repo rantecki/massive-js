@@ -15,3 +15,5 @@ SELECT * FROM vals WHERE string LIKE 't%';
 
 CREATE MATERIALIZED VIEW vals_ending_with_e AS
 SELECT * FROM vals WHERE string LIKE '%e';
+
+CREATE UNIQUE INDEX ON vals_ending_with_e (id);

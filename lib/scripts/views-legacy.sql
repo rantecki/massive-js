@@ -11,9 +11,23 @@
 --   override blacklisted tables.
 
 SELECT * FROM (
-  SELECT schemaname AS schema, viewname AS name
-  FROM pg_views
+  SELECT
+    v.schemaname AS schema,
+    v.viewname AS name,
+    array_agg(DISTINCT c.attname::text) AS columns,
+    pg_relation_is_updatable(cls.oid::regclass, true) & 8 >= 8 AS is_insertable_into,
+    FALSE AS is_matview
+  FROM pg_views v
+  JOIN pg_catalog.pg_namespace nsp
+    ON nsp.nspname = v.schemaname
+  JOIN pg_catalog.pg_class cls
+    ON cls.relnamespace = nsp.oid
+    AND cls.relname = v.viewname
+  JOIN pg_catalog.pg_attribute c
+    ON c.attrelid = cls.oid
+    AND c.attnum > 0
   WHERE schemaname <> 'pg_catalog' AND schemaname <> 'information_schema'
+  GROUP BY v.schemaname, v.viewname, cls.oid
 ) views
 WHERE CASE
   WHEN $(whitelist) <> '' THEN
